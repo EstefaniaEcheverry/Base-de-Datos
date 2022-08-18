@@ -1,0 +1,60 @@
+---
+title: "Inmueble_Arriendo"
+author: "Estefania Echeverry Franco"
+date: '2022-08-17'
+output: html_document
+---
+
+## Inmuebles en Arriendo
+
+Son 5301 inmuebles controlados por los centros de costos, el centro de costos con mayor número de inmuebles es "Los Colores" con 1040 inmuebles, es decir, el 19.6 % de los inmuebles, el centro de costos con menor inmuebles es "San Antonio de Prado" con 70 inmuebles.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r ,include=FALSE,warning=FALSE}
+#Cargar las librerias
+library(DT)
+library(sf)
+library(sp)
+library(tmap)
+library(dplyr)
+library(ggmap)
+library(tidyr)
+library(readxl)
+library(colmaps)
+library(ggplot2)
+library(leaflet)
+library(stringr)
+library(ggthemes)
+library(tidyverse)
+library(rstudioapi)
+library(kableExtra)
+library(tidygeocoder)
+library(rgeoboundaries)
+#Decargar paquete de github
+# install.packages("remotes")
+remotes::install_github("wmgeolab/rgeoboundaries")
+#Cargar la base de datos
+setwd("~/Inmuebles Arrendados/Portada Inmobiliaria/Inmuebles_Arrendados")
+inmuact_new <- read.csv2("data/datos_nuevos.csv", header= TRUE)
+# Comienzo de la base de datos
+#head(inmuact_new)
+# Convertir las cedulas a caracteres
+inmuact_new$`P.Cedula` <- as.character(inmuact_new$ `P.Cedula`)
+inmuact_new$`A..Cedula` <- as.character(inmuact_new$ `A..Cedula`)
+#str(inmuact_new)
+#Convertir los centro de costos en factores
+inmuact_new$CentroCostos <- as.factor(inmuact_new$CentroCostos)
+# Seleccionar solo los sectores de interes
+inmuact_newfil <- inmuact_new[is.element(inmuact_new$CentroCostos, c("1","2","3","4","8","9","10","11","12","19","22","25")), ]
+
+# Buscar la posición de Rionegro en la variable Ciudad
+#which(inmuact_newfil$Ciudad == "RIONEGRO")
+# Cambiar la ciudad Rionegro por Medellin, falla de asignación de la ciudad
+inmuact_newfil[3420, 7] <- "MEDELLIN"
+#inmuact_newfil[3468, 2] <- "01"
+# Nueva variable con nombre de los sectores seleccionados
+inmuact_newfil$CentroCostos_n <- factor(inmuact_newfil$CentroCostos, labels = c("Laureles","Sabaneta","Poblado","Colores","Envigado","Itagui","Centro","Bello","La estrella", "San Antonio Pr." , "Calasanz","Fontibon"))
+```
